@@ -32,15 +32,15 @@ pipeline {
             }
         }
         
-        stage('SCA'){
-            steps{
-                figlet 'Dependency-Check'
-                sh 'mvn org.owasp:dependency-check-maven:purge'
-                sh 'mvn org.owasp:dependency-check-maven:check'
+        // stage('SCA'){
+        //     steps{
+        //         figlet 'Dependency-Check'
+        //         sh 'mvn org.owasp:dependency-check-maven:purge'
+        //         sh 'mvn org.owasp:dependency-check-maven:check'
                 
-                archiveArtifacts artifacts: 'target/dependency-check-report.html', followSymlinks: false
-            }
-        }
+        //         archiveArtifacts artifacts: 'target/dependency-check-report.html', followSymlinks: false
+        //     }
+        // }
         
         stage('Sonarqube'){
            steps{
@@ -49,7 +49,7 @@ pipeline {
                    def scannerHome = tool 'SonarQube Scanner'
                    
                    withSonarQubeEnv('Sonar Server'){
-                       sh "${scannerHome}/bin/sonar-scanner -Dsonar.projectKey=ms-maven -Dsonar.sources=. -Dsonar.projectBaseDir=${env.WORKSPACE} -Dsonar.java.binaries=target/classes -Dsonar.exclusions='**/*/test/**/*, **/*/acceptance-test/**/*, **/*.html'"
+                       sh "${scannerHome}/bin/sonar-scanner -Dsonar.projectKey=soyphea -Dsonar.sources=. -Dsonar.projectBaseDir=${env.WORKSPACE} -Dsonar.java.binaries=target/classes -Dsonar.exclusions='**/*/test/**/*, **/*/acceptance-test/**/*, **/*.html,**/*/scripts/**/*,**/*/k8s/**/*'"
                    }
                }
            }
