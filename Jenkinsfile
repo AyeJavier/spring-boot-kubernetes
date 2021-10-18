@@ -31,10 +31,7 @@ pipeline {
                 sh 'mvn clean test -e'
             }
         }
-        
-        
-        
-        stage('Sonarqube'){
+        stage('SAST'){
            steps{
                figlet 'SonarQube'
                script{
@@ -46,15 +43,15 @@ pipeline {
                }
            }
           }
-        // stage('SCA'){
-        //     steps{
-        //         figlet 'Dependency-Check'
-        //         sh 'mvn org.owasp:dependency-check-maven:purge'
-        //         sh 'mvn org.owasp:dependency-check-maven:check'
+        stage('SCA'){
+            steps{
+                figlet 'Dependency-Check'
+                sh 'mvn org.owasp:dependency-check-maven:purge'
+                sh 'mvn org.owasp:dependency-check-maven:check'
                 
-        //         archiveArtifacts artifacts: 'target/dependency-check-report.html', followSymlinks: false
-        //     }
-        // }
+                archiveArtifacts artifacts: 'target/dependency-check-report.html', followSymlinks: false
+            }
+        }
         // stage('DAST'){
         //     steps{
         //         figlet 'Owasp Zap DAST'
