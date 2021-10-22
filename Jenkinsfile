@@ -18,40 +18,40 @@ pipeline {
             }
         }
 
-        // stage('Compile'){
-        //     steps{
-        //         figlet 'Compile'
-        //         sh 'mvn clean compile -e'
-        //     }
-        // }
+        stage('Compile'){
+            steps{
+                figlet 'Compile'
+                sh 'mvn clean compile -e'
+            }
+        }
         
-        // stage('Test'){
-        //     steps{
-        //         figlet 'Test'
-        //         sh 'mvn clean test -e'
-        //     }
-        // }
-        // stage('SAST'){
-        //    steps{
-        //        figlet 'SonarQube'
-        //        script{
-        //            def scannerHome = tool 'SonarQube Scanner'
+        stage('Test'){
+            steps{
+                figlet 'Test'
+                sh 'mvn clean test -e'
+            }
+        }
+        stage('SAST'){
+           steps{
+               figlet 'SonarQube'
+               script{
+                   def scannerHome = tool 'SonarQube Scanner'
                    
-        //            withSonarQubeEnv('Sonar Server'){
-        //                sh "${scannerHome}/bin/sonar-scanner -Dsonar.projectKey=soyphea -Dsonar.sources=. -Dsonar.projectBaseDir=${env.WORKSPACE} -Dsonar.java.binaries=target/classes -Dsonar.exclusions='**/*/test/**/*, **/*/acceptance-test/**/*, **/*.html,scripts/**/*,k8s/**/*,*.go'"
-        //            }
-        //        }
-        //    }
-        //   }
-        // stage('SCA'){
-        //     steps{
-        //         figlet 'Dependency-Check'
-        //         sh 'mvn org.owasp:dependency-check-maven:purge'
-        //         sh 'mvn org.owasp:dependency-check-maven:check'
+                   withSonarQubeEnv('Sonar Server'){
+                       sh "${scannerHome}/bin/sonar-scanner -Dsonar.projectKey=soyphea -Dsonar.sources=. -Dsonar.projectBaseDir=${env.WORKSPACE} -Dsonar.java.binaries=target/classes -Dsonar.exclusions='**/*/test/**/*, **/*/acceptance-test/**/*, **/*.html,scripts/**/*,k8s/**/*,*.go'"
+                   }
+               }
+           }
+          }
+        stage('SCA'){
+            steps{
+                figlet 'Dependency-Check'
+                sh 'mvn org.owasp:dependency-check-maven:purge'
+                sh 'mvn org.owasp:dependency-check-maven:check'
                 
-        //         archiveArtifacts artifacts: 'target/**', followSymlinks: false
-        //     }
-        // }
+                archiveArtifacts artifacts: 'target/**', followSymlinks: false
+            }
+        }
         stage('DAST'){
             steps{
                 figlet 'Owasp Zap DAST'
@@ -78,21 +78,21 @@ pipeline {
             }
         }
         
-        stage('Scan Docker'){
-                            steps{
-                                figlet 'Scan Docker'
-                                script{
-                                    env.DOCKER = tool "Docker"
-                                        env.DOCKER_EXEC = "${DOCKER}/bin/docker"
+        // stage('Scan Docker'){
+        //                     steps{
+        //                         figlet 'Scan Docker'
+        //                         script{
+        //                             env.DOCKER = tool "Docker"
+        //                                 env.DOCKER_EXEC = "${DOCKER}/bin/docker"
 
-                                    sh '''
-                                        ${DOCKER_EXEC} run --rm -v $(pwd):/root/.cache/ aquasec/trivy python:3.4-alpine
-                                    '''
+        //                             sh '''
+        //                                 ${DOCKER_EXEC} run --rm -v $(pwd):/root/.cache/ aquasec/trivy python:3.4-alpine
+        //                             '''
 
-                                        sh '${DOCKER_EXEC} rmi aquasec/trivy'
-                                }
-                            }
-        }
+        //                                 sh '${DOCKER_EXEC} rmi aquasec/trivy'
+        //                         }
+        //                     }
+        // }
     }
     
            
